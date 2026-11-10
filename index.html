@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#101114" />
+  <title>RIFT — Build your fight</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="app-shell" id="appShell">
+    <header class="topbar">
+      <a class="brand" href="#" aria-label="Rift home"><span class="brand-mark">R</span><span>RIFT<span class="brand-period">.</span></span></a>
+      <div class="top-meta"><span class="live-dot"></span> FIGHT LAB <span class="meta-divider">/</span> BUILD 01</div>
+      <button class="sound-toggle" id="soundToggle" aria-label="Toggle sound"><span class="sound-icon">♪</span><span>SOUND <b id="soundState">ON</b></span></button>
+    </header>
+
+    <main class="builder" id="builder">
+      <section class="intro-row">
+        <div><p class="eyebrow"><span>01</span> THE FIGHT IS YOURS</p><h1>Build your <em>fight.</em></h1></div>
+        <p class="intro-copy">Every detail. Every rule. Every rematch.<br><span>Make the arena answer to you.</span></p>
+      </section>
+
+      <section class="workspace">
+        <div class="left-column">
+          <article class="panel fighter-panel">
+            <div class="panel-heading"><div><span class="step-tag">01 / FIGHTERS</span><h2>Choose your contender</h2></div><span class="panel-index">✳</span></div>
+            <div class="fighter-select" id="fighterSelect"></div>
+            <div class="fighter-editor">
+              <div class="fighter-portrait" id="fighterPortrait"><canvas id="portraitCanvas" width="190" height="220"></canvas><span class="portrait-label">PLAYER 01</span></div>
+              <div class="fighter-info">
+                <div class="fighter-title-row"><div><p class="micro-label">YOUR FIGHTER</p><h3 id="fighterName">VANTA</h3></div><span class="style-chip" id="fighterStyle">STRIKER</span></div>
+                <label class="name-input-wrap"><span>CALLSIGN</span><input id="callsign" maxlength="14" value="VANTA" aria-label="Your fighter callsign" /></label>
+                <div class="stat-list" id="fighterStats"></div>
+                <div class="palette-row"><span>COLORWAY</span><div class="swatches" id="swatches"></div></div>
+              </div>
+            </div>
+          </article>
+
+          <article class="panel opponent-panel">
+            <div class="panel-heading"><div><span class="step-tag">02 / OPPONENT</span><h2>Set the opposition</h2></div><span class="bot-badge"><span>◈</span> AI CONTROLLED</span></div>
+            <div class="opponent-layout">
+              <div class="opponent-card"><div class="opponent-avatar" id="opponentAvatar"><canvas id="opponentCanvas" width="116" height="124"></canvas></div><div><span class="micro-label">RIVAL FIGHTER</span><h3 id="opponentName">KAIRO</h3><span class="rival-sub" id="opponentStyle">COUNTERPUNCHER</span></div><button class="swap-button" id="swapFighter" title="Change rival fighter" aria-label="Change rival fighter">⇄</button></div>
+              <div class="ai-control"><div class="range-heading"><label for="aiLevel">AI TEMPERAMENT</label><span id="aiLabel">TACTICAL</span></div><input id="aiLevel" type="range" min="1" max="5" value="3" /><div class="range-ends"><span>CHILL</span><span>RELENTLESS</span></div><p>Choose how your rival thinks. They adapt, punish, and never fight quite the same way twice.</p></div>
+            </div>
+          </article>
+
+          <article class="panel rules-panel">
+            <div class="panel-heading"><div><span class="step-tag">03 / RULES</span><h2>Write the rules</h2></div><span class="panel-index">⌘</span></div>
+            <div class="rule-grid">
+              <div class="rule-control"><label>ROUNDS TO WIN</label><div class="segmented" id="roundOptions"><button data-value="1">1</button><button data-value="2" class="active">2</button><button data-value="3">3</button></div><small>FIRST TO WINS</small></div>
+              <div class="rule-control"><label>ROUND TIMER</label><div class="segmented" id="timeOptions"><button data-value="45">45</button><button data-value="60" class="active">60</button><button data-value="99">∞</button></div><small>SECONDS</small></div>
+              <div class="rule-control"><label>SUPER METER</label><button class="toggle-switch is-on" id="meterToggle" aria-pressed="true"><span></span><b>ENABLED</b></button><small>BUILD & UNLEASH</small></div>
+              <div class="rule-control"><label>STAGE HAZARDS</label><button class="toggle-switch" id="hazardToggle" aria-pressed="false"><span></span><b>DISABLED</b></button><small>UNPREDICTABLE TWIST</small></div>
+            </div>
+          </article>
+        </div>
+
+        <aside class="right-column">
+          <article class="arena-card">
+            <div class="arena-topline"><span><i></i> LIVE PREVIEW</span><span id="stageNumber">STAGE 01 / 04</span></div>
+            <div class="arena-preview" id="arenaPreview"><canvas id="previewCanvas" aria-label="Live preview of your selected arena"></canvas><div class="preview-vignette"></div><div class="preview-caption"><span class="stage-kicker" id="stageTheme">NEON DISTRICT</span><h2 id="stageName">NIGHT<br/>MARKET</h2><p id="stageDesc">AFTER HOURS. NO RULES.</p></div><button class="stage-arrow prev" id="prevStage" aria-label="Previous stage">‹</button><button class="stage-arrow next" id="nextStage" aria-label="Next stage">›</button><div class="stage-dots" id="stageDots"></div><span class="stage-coords">34° 03' 08" N<br/>118° 14' 37" W</span></div>
+            <div class="arena-bottom"><div><span class="micro-label">CURRENT ARENA</span><h3 id="stageBottomName">NIGHT MARKET</h3></div><span class="arena-status"><span></span> READY</span></div>
+          </article>
+          <div class="match-summary"><span class="summary-label">MATCH FORMAT</span><div class="summary-versus"><span id="summaryPlayer">VANTA</span><span>VS</span><span id="summaryOpponent">KAIRO</span></div><div class="summary-details"><span id="summaryRounds">BEST OF 3</span><span>•</span><span id="summaryTime">60 SEC</span><span>•</span><span id="summaryHazards">CLEAN FIGHT</span></div></div>
+          <button class="launch-button" id="launchButton"><span class="launch-icon">▶</span><span><b>ENTER THE RIFT</b><small>LET'S SETTLE THIS</small></span><span class="launch-arrow">↗</span></button>
+          <p class="control-hint"><span>⌨</span> KEYBOARD + TOUCH READY <b>·</b> NO DOWNLOAD</p>
+        </aside>
+      </section>
+      <footer class="builder-footer"><span>RIFT FIGHT LAB <span>© 2025</span></span><span>BUILT FOR THE REMATCH <b>↗</b></span></footer>
+    </main>
+
+    <section class="game-screen" id="gameScreen" aria-hidden="true">
+      <div class="game-topbar"><button class="back-button" id="backButton">← <span>BACK TO LAB</span></button><div class="game-brand">RIFT <span>·</span> LIVE MATCH</div><div class="round-readout" id="roundReadout">ROUND 1</div></div>
+      <div class="game-arena"><canvas id="gameCanvas" aria-label="Fighting game arena"></canvas><div class="fight-vignette"></div>
+        <div class="hud hud-left"><div class="hud-name"><span class="hud-number">01</span><b id="hudPlayerName">VANTA</b></div><div class="health-track"><div class="health-fill player-health" id="playerHealth"></div></div><div class="meter-track"><div class="meter-fill player-meter" id="playerMeter"></div></div></div>
+        <div class="hud hud-right"><div class="hud-name"><b id="hudOpponentName">KAIRO</b><span class="hud-number">02 / CPU</span></div><div class="health-track"><div class="health-fill opponent-health" id="opponentHealth"></div></div><div class="meter-track"><div class="meter-fill opponent-meter" id="opponentMeter"></div></div></div>
+        <div class="fight-clock" id="fightClock">60</div><div class="round-indicator" id="roundIndicator">ROUND 1</div><div class="fight-message" id="fightMessage"><span>ROUND 1</span><b>FIGHT!</b></div>
+        <div class="match-toast" id="matchToast"></div>
+        <div class="touch-controls" id="touchControls"><div class="move-pad"><button data-key="left" aria-label="Move left">←</button><button data-key="right" aria-label="Move right">→</button></div><div class="action-pad"><button data-action="block" class="block-action">GUARD</button><button data-action="kick" class="kick-action">KICK</button><button data-action="punch" class="punch-action">PUNCH</button><button data-action="special" class="special-action">SUPER</button></div></div>
+      </div>
+      <div class="game-bottom"><div class="controls-legend"><span><kbd>A</kbd><kbd>D</kbd> MOVE</span><span><kbd>J</kbd> PUNCH</span><span><kbd>K</kbd> KICK</span><span><kbd>L</kbd> GUARD</span><span><kbd>SPACE</kbd> SUPER</span></div><button class="restart-button" id="restartButton">↻ <span>REMATCH</span></button></div>
+    </section>
+  </div>
+  <script src="app.js"></script>
+</body>
+</html>
