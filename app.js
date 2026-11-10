@@ -38,7 +38,7 @@ function drawStage(ctx, w, h, stage, time = 0, full = false) {
   if (stage.kind === 2) { ctx.fillStyle = '#f6d990'; ctx.globalAlpha = .6; ctx.beginPath(); ctx.arc(w * .78, h * .27, h * .08, 0, Math.PI * 2); ctx.fill(); ctx.globalAlpha = 1; }
   if (stage.kind === 3) { ctx.fillStyle = '#9de6e822'; for (let i = 0; i < 5; i++) { ctx.beginPath(); ctx.moveTo(w * (.1 + i * .2), h * .6); ctx.lineTo(w * (.2 + i * .2), h * .22); ctx.lineTo(w * (.3 + i * .2), h * .6); ctx.fill(); } }
   const floor = h * .81; const floorGrad = ctx.createLinearGradient(0, floor, 0, h); floorGrad.addColorStop(0, '#222129'); floorGrad.addColorStop(1, '#101116'); ctx.fillStyle = floorGrad; ctx.fillRect(0, floor, w, h - floor);
-  ctx.strokeStyle = `${stage.colors[2]}66`; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(0, floor, w, floor); ctx.stroke();
+  ctx.strokeStyle = `${stage.colors[2]}66`; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(0, floor); ctx.lineTo(w, floor); ctx.stroke();
   for (let i = -4; i <= 4; i++) { ctx.beginPath(); ctx.moveTo(w / 2 + i * w * .12, floor); ctx.lineTo(w / 2 + i * w * .3, h); ctx.stroke(); }
   if (full) { ctx.fillStyle = '#fff'; ctx.globalAlpha = .05; ctx.fillRect(0, floor - 1, w, 2); ctx.globalAlpha = 1; }
 }
@@ -69,7 +69,7 @@ function drawPortrait(canvas, character, color) { const box = fitCanvas(canvas);
 function setActive(buttons, value) { buttons.forEach(button => button.classList.toggle('active', Number(button.dataset.value) === value)); }
 function renderBuilder() {
   const player = fighters[state.fighter], rival = fighters[state.opponent], stage = stages[state.stage];
-  $('#fighterSelect').innerHTML = fighters.map((f, i) => `<button class="fighter-option ${i === state.fighter ? 'active' : ''}" data-fighter="${i}" aria-pressed="${i === state.fighter}"><span class="option-mark" style="--fighter-color:${f.color}">${String(i + 1).padStart(2, '0')}</span><span><strong>${f.name}</strong><small>${f.style}</small></span></button>`).join('');
+  $('#fighterSelect').innerHTML = fighters.map((f, i) => `<button class="fighter-option ${i === state.fighter ? 'active' : ''}" data-fighter="${i}" aria-pressed="${i === state.fighter}" style="--option-color:${f.color}"><span class="option-mark" style="--fighter-color:${f.color}">${String(i + 1).padStart(2, '0')}</span><span><strong>${f.name}</strong><small>${f.style}</small></span></button>`).join('');
   $('#fighterName').textContent = player.name; $('#fighterStyle').textContent = player.style; $('#callsign').value = player.callSign || player.name;
   $('#fighterStats').innerHTML = ['POWER', 'SPEED', 'RANGE'].map((name, i) => `<div class="stat-row"><span>${name}</span><div class="stat-meter">${Array.from({ length: 5 }, (_, n) => `<i class="${n < player.stats[i] ? 'filled' : ''}"></i>`).join('')}</div><b>${player.stats[i]}</b></div>`).join('');
   $('#swatches').innerHTML = palettes.map((c, i) => `<button class="swatch ${i === state.color ? 'active' : ''}" data-color="${i}" aria-label="Color ${i + 1}" style="--swatch:${c}"></button>`).join('');
@@ -143,7 +143,7 @@ function updateGame(dt){const p=game.player,e=game.enemy;if(!p||!e)return;
  e.aiThink-=dt;const dist=Math.abs(e.x-p.x)*w,aggr=state.ai/5;
  if(e.hitStun===0&&e.pose!=='attack'&&e.pose!=='kick'){
    if(e.aiThink<=0){e.aiThink=.22+Math.random()*.48-(aggr*.09);const danger=p.pose==='attack'||p.pose==='kick';if(danger&&dist<w*.19&&Math.random()<.12+aggr*.48){e.aiAction='guard';e.guard=true}else{e.guard=false;e.aiAction=dist>w*.19?'approach':Math.random()<(aggr*.22)?'guard':'attack'}}
-   if(e.aiAction==='guard'&&dist<w*.22)e.guard=true;else if(e.guard){e.guard=false;if(e.pose==='block')e.pose='idle'}
+   if(e.aiAction==='guard'&&dist<w*.22){e.guard=true;if(e.pose!=='attack'&&e.pose!=='kick')e.pose='block'}else if(e.guard){e.guard=false;if(e.pose==='block')e.pose='idle'}
    if(e.aiAction==='approach'&&dist>w*.12){e.x+=e.facing*(.27+aggr*.14)*dt*sx;e.walk=1;if(!e.guard)e.pose='walk'}else if(e.pose==='walk')e.pose='idle';
    if(e.aiAction==='attack'&&dist<w*(.18+aggr*.07)){e.aiAction='';const roll=Math.random();if(state.meter&&e.meter>=100&&roll<aggr*.22)special(e);else if(roll<.48)kick(e);else punch(e)}
  }
@@ -165,6 +165,6 @@ function handleAction(key,down){if(!down)return;const p=game.player;if(!p)return
 window.addEventListener('keydown',e=>{const key=e.key.toLowerCase();if(['arrowleft','arrowright',' ','arrowup','arrowdown'].includes(key))e.preventDefault();if(key==='a'||key==='arrowleft')game.keys.left=true;if(key==='d'||key==='arrowright')game.keys.right=true;if(key==='l'||key==='arrowdown')game.keys.guard=true;if(!e.repeat){if(key==='j')handleAction('punch',true);if(key==='k')handleAction('kick',true);if(key===' '||key==='spacebar')handleAction('special',true)}});
 window.addEventListener('keyup',e=>{const key=e.key.toLowerCase();if(key==='a'||key==='arrowleft')game.keys.left=false;if(key==='d'||key==='arrowright')game.keys.right=false;if(key==='l'||key==='arrowdown'){game.keys.guard=false;if(game.player)setGuard(game.player,false)}});
 $$('.touch-controls [data-key]').forEach(button=>{const k=button.dataset.key;button.addEventListener('pointerdown',e=>{e.preventDefault();game.keys[k]=true;button.setPointerCapture?.(e.pointerId)});['pointerup','pointercancel','lostpointercapture'].forEach(ev=>button.addEventListener(ev,()=>game.keys[k]=false))});
-$$('.touch-controls [data-action]').forEach(button=>{const action=button.dataset.action;button.addEventListener('pointerdown',e=>{e.preventDefault();if(action==='block')setGuard(game.player,true);else handleAction(action,true)});['pointerup','pointercancel','lostpointercapture'].forEach(ev=>button.addEventListener(ev,()=>{if(action==='block')setGuard(game.player,false)}))});
+$$('.touch-controls [data-action]').forEach(button=>{const action=button.dataset.action;button.addEventListener('pointerdown',e=>{e.preventDefault();button.setPointerCapture?.(e.pointerId);if(action==='block'){game.keys.guard=true;setGuard(game.player,true)}else handleAction(action,true)});['pointerup','pointercancel','lostpointercapture'].forEach(ev=>button.addEventListener(ev,()=>{if(action==='block'){game.keys.guard=false;setGuard(game.player,false)}}))});
 window.addEventListener('blur',()=>{game.keys={};if(game.player)setGuard(game.player,false)});
 setupControls();renderBuilder();
